@@ -1,6 +1,6 @@
 /**
  * me3 Protocol v0.1
- * 
+ *
  * A protocol for portable personal websites.
  * Your site lives in a single me.json file that you can take anywhere.
  */
@@ -11,59 +11,59 @@
 
 export interface Me3Page {
   /** URL-friendly identifier */
-  slug: string
+  slug: string;
   /** Display name for navigation */
-  title: string
+  title: string;
   /** Path to markdown file (relative to me.json) */
-  file: string
+  file: string;
   /** Whether to show in navigation */
-  visible: boolean
+  visible: boolean;
 }
 
 export interface Me3Links {
-  website?: string
-  github?: string
-  twitter?: string
-  linkedin?: string
-  instagram?: string
-  youtube?: string
-  tiktok?: string
-  email?: string
-  [key: string]: string | undefined
+  website?: string;
+  github?: string;
+  twitter?: string;
+  linkedin?: string;
+  instagram?: string;
+  youtube?: string;
+  tiktok?: string;
+  email?: string;
+  [key: string]: string | undefined;
 }
 
 export interface Me3Button {
   /** Button text (max 30 chars) */
-  text: string
+  text: string;
   /** URL to open when clicked */
-  url: string
+  url: string;
   /** Button style */
-  style?: 'primary' | 'secondary' | 'outline'
+  style?: "primary" | "secondary" | "outline";
   /** Optional icon (emoji or icon identifier) */
-  icon?: string
+  icon?: string;
 }
 
 export interface Me3Profile {
   /** Protocol version */
-  version: string
+  version: string;
   /** Display name (required) */
-  name: string
+  name: string;
   /** Username/handle */
-  handle?: string
+  handle?: string;
   /** Short bio */
-  bio?: string
+  bio?: string;
   /** Avatar URL (absolute or relative) */
-  avatar?: string
+  avatar?: string;
   /** Banner/header image URL */
-  banner?: string
+  banner?: string;
   /** Social and external links */
-  links?: Me3Links
+  links?: Me3Links;
   /** Call-to-action buttons (max 3) */
-  buttons?: Me3Button[]
+  buttons?: Me3Button[];
   /** Custom pages (markdown) */
-  pages?: Me3Page[]
+  pages?: Me3Page[];
   /** Theme identifier (for future use) */
-  theme?: string
+  theme?: string;
 }
 
 // ============================================================================
@@ -71,160 +71,219 @@ export interface Me3Profile {
 // ============================================================================
 
 export interface ValidationError {
-  field: string
-  message: string
+  field: string;
+  message: string;
 }
 
 export interface ValidationResult {
-  valid: boolean
-  errors: ValidationError[]
-  profile?: Me3Profile
+  valid: boolean;
+  errors: ValidationError[];
+  profile?: Me3Profile;
 }
 
-const CURRENT_VERSION = '0.1'
-const MAX_NAME_LENGTH = 100
-const MAX_BIO_LENGTH = 500
-const MAX_HANDLE_LENGTH = 30
-const HANDLE_REGEX = /^[a-z0-9_-]+$/i
-const MAX_BUTTONS = 3
-const MAX_BUTTON_TEXT_LENGTH = 30
-const VALID_BUTTON_STYLES = ['primary', 'secondary', 'outline']
-const URL_REGEX = /^https?:\/\/.+/i
+const CURRENT_VERSION = "0.1";
+const MAX_NAME_LENGTH = 100;
+const MAX_BIO_LENGTH = 500;
+const MAX_HANDLE_LENGTH = 30;
+const HANDLE_REGEX = /^[a-z0-9_-]+$/i;
+const MAX_BUTTONS = 3;
+const MAX_BUTTON_TEXT_LENGTH = 30;
+const VALID_BUTTON_STYLES = ["primary", "secondary", "outline"];
+const URL_REGEX = /^https?:\/\/.+/i;
 
 /**
  * Validate a me3 profile object
  */
 export function validateProfile(data: unknown): ValidationResult {
-  const errors: ValidationError[] = []
+  const errors: ValidationError[] = [];
 
-  if (!data || typeof data !== 'object') {
+  if (!data || typeof data !== "object") {
     return {
       valid: false,
-      errors: [{ field: 'root', message: 'Profile must be an object' }],
-    }
+      errors: [{ field: "root", message: "Profile must be an object" }],
+    };
   }
 
-  const profile = data as Record<string, unknown>
+  const profile = data as Record<string, unknown>;
 
   // Version (required)
-  if (!profile.version || typeof profile.version !== 'string') {
-    errors.push({ field: 'version', message: 'Version is required' })
+  if (!profile.version || typeof profile.version !== "string") {
+    errors.push({ field: "version", message: "Version is required" });
   } else if (profile.version !== CURRENT_VERSION) {
-    errors.push({ field: 'version', message: `Unsupported version. Expected ${CURRENT_VERSION}` })
+    errors.push({
+      field: "version",
+      message: `Unsupported version. Expected ${CURRENT_VERSION}`,
+    });
   }
 
   // Name (required)
-  if (!profile.name || typeof profile.name !== 'string') {
-    errors.push({ field: 'name', message: 'Name is required' })
+  if (!profile.name || typeof profile.name !== "string") {
+    errors.push({ field: "name", message: "Name is required" });
   } else if (profile.name.length > MAX_NAME_LENGTH) {
-    errors.push({ field: 'name', message: `Name must be ${MAX_NAME_LENGTH} characters or less` })
+    errors.push({
+      field: "name",
+      message: `Name must be ${MAX_NAME_LENGTH} characters or less`,
+    });
   }
 
   // Handle (optional)
   if (profile.handle !== undefined) {
-    if (typeof profile.handle !== 'string') {
-      errors.push({ field: 'handle', message: 'Handle must be a string' })
+    if (typeof profile.handle !== "string") {
+      errors.push({ field: "handle", message: "Handle must be a string" });
     } else if (profile.handle.length > MAX_HANDLE_LENGTH) {
-      errors.push({ field: 'handle', message: `Handle must be ${MAX_HANDLE_LENGTH} characters or less` })
+      errors.push({
+        field: "handle",
+        message: `Handle must be ${MAX_HANDLE_LENGTH} characters or less`,
+      });
     } else if (!HANDLE_REGEX.test(profile.handle)) {
-      errors.push({ field: 'handle', message: 'Handle can only contain letters, numbers, underscores, and hyphens' })
+      errors.push({
+        field: "handle",
+        message:
+          "Handle can only contain letters, numbers, underscores, and hyphens",
+      });
     }
   }
 
   // Bio (optional)
   if (profile.bio !== undefined) {
-    if (typeof profile.bio !== 'string') {
-      errors.push({ field: 'bio', message: 'Bio must be a string' })
+    if (typeof profile.bio !== "string") {
+      errors.push({ field: "bio", message: "Bio must be a string" });
     } else if (profile.bio.length > MAX_BIO_LENGTH) {
-      errors.push({ field: 'bio', message: `Bio must be ${MAX_BIO_LENGTH} characters or less` })
+      errors.push({
+        field: "bio",
+        message: `Bio must be ${MAX_BIO_LENGTH} characters or less`,
+      });
     }
   }
 
   // Avatar (optional)
-  if (profile.avatar !== undefined && typeof profile.avatar !== 'string') {
-    errors.push({ field: 'avatar', message: 'Avatar must be a string URL' })
+  if (profile.avatar !== undefined && typeof profile.avatar !== "string") {
+    errors.push({ field: "avatar", message: "Avatar must be a string URL" });
   }
 
   // Banner (optional)
-  if (profile.banner !== undefined && typeof profile.banner !== 'string') {
-    errors.push({ field: 'banner', message: 'Banner must be a string URL' })
+  if (profile.banner !== undefined && typeof profile.banner !== "string") {
+    errors.push({ field: "banner", message: "Banner must be a string URL" });
   }
 
   // Links (optional)
   if (profile.links !== undefined) {
-    if (typeof profile.links !== 'object' || profile.links === null) {
-      errors.push({ field: 'links', message: 'Links must be an object' })
+    if (typeof profile.links !== "object" || profile.links === null) {
+      errors.push({ field: "links", message: "Links must be an object" });
     }
   }
 
   // Buttons (optional)
   if (profile.buttons !== undefined) {
     if (!Array.isArray(profile.buttons)) {
-      errors.push({ field: 'buttons', message: 'Buttons must be an array' })
+      errors.push({ field: "buttons", message: "Buttons must be an array" });
     } else {
       if (profile.buttons.length > MAX_BUTTONS) {
-        errors.push({ field: 'buttons', message: `Maximum ${MAX_BUTTONS} buttons allowed` })
+        errors.push({
+          field: "buttons",
+          message: `Maximum ${MAX_BUTTONS} buttons allowed`,
+        });
       }
       profile.buttons.forEach((button, index) => {
-        if (!button || typeof button !== 'object') {
-          errors.push({ field: `buttons[${index}]`, message: 'Button must be an object' })
-          return
+        if (!button || typeof button !== "object") {
+          errors.push({
+            field: `buttons[${index}]`,
+            message: "Button must be an object",
+          });
+          return;
         }
-        if (!button.text || typeof button.text !== 'string') {
-          errors.push({ field: `buttons[${index}].text`, message: 'Button text is required' })
+        if (!button.text || typeof button.text !== "string") {
+          errors.push({
+            field: `buttons[${index}].text`,
+            message: "Button text is required",
+          });
         } else if (button.text.length > MAX_BUTTON_TEXT_LENGTH) {
-          errors.push({ field: `buttons[${index}].text`, message: `Button text must be ${MAX_BUTTON_TEXT_LENGTH} characters or less` })
+          errors.push({
+            field: `buttons[${index}].text`,
+            message: `Button text must be ${MAX_BUTTON_TEXT_LENGTH} characters or less`,
+          });
         }
-        if (!button.url || typeof button.url !== 'string') {
-          errors.push({ field: `buttons[${index}].url`, message: 'Button URL is required' })
+        if (!button.url || typeof button.url !== "string") {
+          errors.push({
+            field: `buttons[${index}].url`,
+            message: "Button URL is required",
+          });
         } else if (!URL_REGEX.test(button.url)) {
-          errors.push({ field: `buttons[${index}].url`, message: 'Button URL must be a valid URL starting with http:// or https://' })
+          errors.push({
+            field: `buttons[${index}].url`,
+            message:
+              "Button URL must be a valid URL starting with http:// or https://",
+          });
         }
-        if (button.style !== undefined && !VALID_BUTTON_STYLES.includes(button.style)) {
-          errors.push({ field: `buttons[${index}].style`, message: `Button style must be one of: ${VALID_BUTTON_STYLES.join(', ')}` })
+        if (
+          button.style !== undefined &&
+          !VALID_BUTTON_STYLES.includes(button.style)
+        ) {
+          errors.push({
+            field: `buttons[${index}].style`,
+            message: `Button style must be one of: ${VALID_BUTTON_STYLES.join(", ")}`,
+          });
         }
-        if (button.icon !== undefined && typeof button.icon !== 'string') {
-          errors.push({ field: `buttons[${index}].icon`, message: 'Button icon must be a string' })
+        if (button.icon !== undefined && typeof button.icon !== "string") {
+          errors.push({
+            field: `buttons[${index}].icon`,
+            message: "Button icon must be a string",
+          });
         }
-      })
+      });
     }
   }
 
   // Pages (optional)
   if (profile.pages !== undefined) {
     if (!Array.isArray(profile.pages)) {
-      errors.push({ field: 'pages', message: 'Pages must be an array' })
+      errors.push({ field: "pages", message: "Pages must be an array" });
     } else {
       profile.pages.forEach((page, index) => {
-        if (!page || typeof page !== 'object') {
-          errors.push({ field: `pages[${index}]`, message: 'Page must be an object' })
-          return
+        if (!page || typeof page !== "object") {
+          errors.push({
+            field: `pages[${index}]`,
+            message: "Page must be an object",
+          });
+          return;
         }
-        if (!page.slug || typeof page.slug !== 'string') {
-          errors.push({ field: `pages[${index}].slug`, message: 'Page slug is required' })
+        if (!page.slug || typeof page.slug !== "string") {
+          errors.push({
+            field: `pages[${index}].slug`,
+            message: "Page slug is required",
+          });
         }
-        if (!page.title || typeof page.title !== 'string') {
-          errors.push({ field: `pages[${index}].title`, message: 'Page title is required' })
+        if (!page.title || typeof page.title !== "string") {
+          errors.push({
+            field: `pages[${index}].title`,
+            message: "Page title is required",
+          });
         }
-        if (!page.file || typeof page.file !== 'string') {
-          errors.push({ field: `pages[${index}].file`, message: 'Page file is required' })
+        if (!page.file || typeof page.file !== "string") {
+          errors.push({
+            field: `pages[${index}].file`,
+            message: "Page file is required",
+          });
         }
-        if (typeof page.visible !== 'boolean') {
-          errors.push({ field: `pages[${index}].visible`, message: 'Page visible must be a boolean' })
+        if (typeof page.visible !== "boolean") {
+          errors.push({
+            field: `pages[${index}].visible`,
+            message: "Page visible must be a boolean",
+          });
         }
-      })
+      });
     }
   }
 
   if (errors.length > 0) {
-    return { valid: false, errors }
+    return { valid: false, errors };
   }
 
   return {
     valid: true,
     errors: [],
     profile: profile as unknown as Me3Profile,
-  }
+  };
 }
 
 /**
@@ -232,15 +291,15 @@ export function validateProfile(data: unknown): ValidationResult {
  */
 export function parseMe3Json(jsonString: string): ValidationResult {
   try {
-    const data = JSON.parse(jsonString)
-    return validateProfile(data)
+    const data = JSON.parse(jsonString);
+    return validateProfile(data);
   } catch (e) {
     return {
       valid: false,
-      errors: [{ field: 'root', message: 'Invalid JSON' }],
-    }
+      errors: [{ field: "root", message: "Invalid JSON" }],
+    };
   }
 }
 
-export const ME3_VERSION = CURRENT_VERSION
-export const ME3_FILENAME = 'me.json'
+export const ME3_VERSION = CURRENT_VERSION;
+export const ME3_FILENAME = "me.json";
