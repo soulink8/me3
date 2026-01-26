@@ -1,0 +1,20 @@
+{
+  "version": "0.1",
+  "name": "Kieran Butler",
+  "handle": "kieran",
+  "bio": "Intuitive. Coach. Coder. Creative. Building Soulink.",
+  "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=kieran",
+  "banner": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=400&fit=crop",
+  "links": {
+    "website": "https://kieranbutler.com",
+    "github": "kieranbutler",
+    "soulink": "kieran"
+  },
+  "buttons": [
+    { "text": "Book a Discovery Call", "url": "https://cal.com/kieran", "style": "primary", "icon": "📅" },
+    { "text": "Buy me a coffee", "url": "https://buymeacoffee.com/kieran", "style": "secondary", "icon": "☕" }
+  ],
+  "pages": [
+    { "slug": "about", "title": "About", "file": "about.md", "visible": true }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "$ref": "#/definitions/Me3Profile",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Me3Button": {
+      "additionalProperties": false,
+      "properties": {
+        "icon": {
+          "description": "Optional icon (emoji or icon identifier)",
+          "type": "string"
+        },
+        "style": {
+          "description": "Button style",
+          "enum": [
+            "primary",
+            "secondary",
+            "outline"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "description": "Button text (max 30 chars)",
+          "type": "string"
+        },
+        "url": {
+          "description": "URL to open when clicked",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "url"
+      ],
+      "type": "object"
+    },
+    "Me3Links": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "not": {}
+          }
+        ]
+      },
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "github": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "linkedin": {
+          "type": "string"
+        },
+        "tiktok": {
+          "type": "string"
+        },
+        "twitter": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "youtube": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Me3Page": {
+      "additionalProperties": false,
+      "description": "me3 Protocol v0.1\n\nA protocol for portable personal websites. Your site lives in a single me.json file that you can take anywhere.",
+      "properties": {
+        "file": {
+          "description": "Path to markdown file (relative to me.json)",
+          "type": "string"
+        },
+        "slug": {
+          "description": "URL-friendly identifier",
+          "type": "string"
+        },
+        "title": {
+          "description": "Display name for navigation",
+          "type": "string"
+        },
+        "visible": {
+          "description": "Whether to show in navigation",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "file",
+        "visible"
+      ],
+      "type": "object"
+    },
+    "Me3Profile": {
+      "additionalProperties": false,
+      "properties": {
+        "avatar": {
+          "description": "Avatar URL (absolute or relative)",
+          "type": "string"
+        },
+        "banner": {
+          "description": "Banner/header image URL",
+          "type": "string"
+        },
+        "bio": {
+          "description": "Short bio",
+          "type": "string"
+        },
+        "buttons": {
+          "description": "Call-to-action buttons (max 3)",
+          "items": {
+            "$ref": "#/definitions/Me3Button"
+          },
+          "type": "array"
+        },
+        "handle": {
+          "description": "Username/handle",
+          "type": "string"
+        },
+        "links": {
+          "$ref": "#/definitions/Me3Links",
+          "description": "Social and external links"
+        },
+        "name": {
+          "description": "Display name (required)",
+          "type": "string"
+        },
+        "pages": {
+          "description": "Custom pages (markdown)",
+          "items": {
+            "$ref": "#/definitions/Me3Page"
+          },
+          "type": "array"
+        },
+        "theme": {
+          "description": "Theme identifier (for future use)",
+          "type": "string"
+        },
+        "version": {
+          "description": "Protocol version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "name"
+      ],
+      "type": "object"
+    }
+  }
+}

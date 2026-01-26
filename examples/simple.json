@@ -1,0 +1,9 @@
+{
+  "version": "0.1",
+  "name": "Jane Doe",
+  "handle": "janedoe",
+  "bio": "Minimalist example.",
+  "links": {
+    "twitter": "janedoe"
+  }
+}

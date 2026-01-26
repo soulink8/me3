@@ -1,0 +1,32 @@
+{
+  "name": "me3-protocol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "generate-schema": "ts-json-schema-generator --path 'src/index.ts' --type 'Me3Profile' --out 'schema.json' --no-type-check",
+    "prepublishOnly": "npm run build && npm run generate-schema"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soulink8/me3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/soulink8/me3/issues"
+  },
+  "homepage": "https://github.com/soulink8/me3#readme",
+  "devDependencies": {
+    "ts-json-schema-generator": "^2.4.0",
+    "typescript": "^5.9.3"
+  }
+}
