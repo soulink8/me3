@@ -50,6 +50,8 @@ export interface Me3Profile {
   name: string;
   /** Username/handle */
   handle?: string;
+  /** Freeform location string (e.g. "Remote", "Berlin, Germany") */
+  location?: string;
   /** Short bio */
   bio?: string;
   /** Avatar URL (absolute or relative) */
@@ -62,8 +64,6 @@ export interface Me3Profile {
   buttons?: Me3Button[];
   /** Custom pages (markdown) */
   pages?: Me3Page[];
-  /** Theme identifier (for future use) */
-  theme?: string;
 }
 
 // ============================================================================
@@ -86,6 +86,7 @@ const MAX_NAME_LENGTH = 100;
 const MAX_BIO_LENGTH = 500;
 const MAX_HANDLE_LENGTH = 30;
 const HANDLE_REGEX = /^[a-z0-9_-]+$/i;
+const MAX_LOCATION_LENGTH = 100;
 const MAX_BUTTONS = 3;
 const MAX_BUTTON_TEXT_LENGTH = 30;
 const VALID_BUTTON_STYLES = ["primary", "secondary", "outline"];
@@ -140,6 +141,18 @@ export function validateProfile(data: unknown): ValidationResult {
         field: "handle",
         message:
           "Handle can only contain letters, numbers, underscores, and hyphens",
+      });
+    }
+  }
+
+  // Location (optional)
+  if (profile.location !== undefined) {
+    if (typeof profile.location !== "string") {
+      errors.push({ field: "location", message: "Location must be a string" });
+    } else if (profile.location.length > MAX_LOCATION_LENGTH) {
+      errors.push({
+        field: "location",
+        message: `Location must be ${MAX_LOCATION_LENGTH} characters or less`,
       });
     }
   }

@@ -131,6 +131,10 @@
           "$ref": "#/definitions/Me3Links",
           "description": "Social and external links"
         },
+        "location": {
+          "description": "Freeform location string (e.g. \"Remote\", \"Berlin, Germany\")",
+          "type": "string"
+        },
         "name": {
           "description": "Display name (required)",
           "type": "string"
@@ -141,10 +145,6 @@
             "$ref": "#/definitions/Me3Page"
           },
           "type": "array"
-        },
-        "theme": {
-          "description": "Theme identifier (for future use)",
-          "type": "string"
         },
         "version": {
           "description": "Protocol version",

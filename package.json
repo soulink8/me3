@@ -1,8 +1,15 @@
 {
   "name": "me3-protocol",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "schema.json",
+    "README.md",
+    "examples"
+  ],
   "scripts": {
     "build": "tsc",
     "generate-schema": "ts-json-schema-generator --path 'src/index.ts' --type 'Me3Profile' --out 'schema.json' --no-type-check",
@@ -11,6 +18,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
       "default": "./dist/index.js"
     }
   },

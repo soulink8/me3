@@ -4,6 +4,10 @@ The **me3 Protocol** (`me.json`) is a minimal standard for portable personal web
 
 It treats your online identity as a **"Digital Business Card"**—a single JSON file that makes you discoverable by both humans and AI agents, without locking you into a specific platform.
 
+## Why it exists (brief)
+
+People increasingly ask AI to *find* a person (to hire, collaborate with, or learn from). Scraping arbitrary personal sites is a failure mode for agents: it’s brittle, slow, and ambiguous. `me.json` is a small, predictable identity endpoint that makes discovery and summarization reliable.
+
 ## 1. The Specification
 
 ### File Location & Discovery
@@ -40,11 +44,14 @@ Your `me.json` defines who you are and where to find you. It is strictly typed t
 | `bio`     | `string` | No       | Short bio (max 500 chars).                        |
 | `avatar`  | `string` | No       | URL to your profile picture.                      |
 | `banner`  | `string` | No       | URL to a header/banner image.                     |
+| `location`| `string` | No       | Freeform location string (e.g. "Remote").         |
 | `links`   | `object` | No       | Social links (website, github, twitter, etc.).    |
 | `buttons` | `array`  | No       | Primary actions (e.g., "Book Call", "Subscribe"). |
 | `pages`   | `array`  | No       | Custom content pages.                             |
 
-### Example
+### Examples
+
+Minimal:
 
 ```json
 {
@@ -52,6 +59,7 @@ Your `me.json` defines who you are and where to find you. It is strictly typed t
   "name": "Jane Doe",
   "handle": "janedoe",
   "bio": "Building the open web. Creative Director at Studio X.",
+  "location": "Berlin, Germany",
   "avatar": "https://example.com/jane.jpg",
   "links": {
     "website": "https://janedoe.com",
@@ -68,13 +76,22 @@ Your `me.json` defines who you are and where to find you. It is strictly typed t
 }
 ```
 
+More complete examples live in [`examples/`](./examples/), including [`examples/simple.json`](./examples/simple.json) and [`examples/full.json`](./examples/full.json).
+
 ## 3. What it is NOT
 
 - **NOT Authentication**: `me.json` is public data. It does not handle logins, passwords, or private keys.
 - **NOT a Social Network**: There is no "feed", no "likes", and no central server. You own your data.
 - **NOT a Platform**: You can host this file on GitHub Pages, Vercel, WordPress, or your own server.
+- **NOT Reputation / Ranking**: No scoring, ranking, endorsements, verification, or algorithmic ordering.
 
-## 4. Usage
+## 4. Guardrails & versioning
+
+- **Current version**: `0.1` (see `version` field). Validators in this repo currently require `version === "0.1"`.
+- **Backwards compatibility**: `0.1` is intended to stay stable. Changes should be additive and conservative.
+- **Extensions**: top-level fields are intentionally strict. If you need custom keys, prefer placing them under `links` (e.g. `"links": { "mastodon": "...", "custom": "..." }`) until the protocol defines a first-class place for extensions.
+
+## 5. Usage
 
 ### For Developers
 

@@ -2,6 +2,7 @@
   "version": "0.1",
   "name": "Jane Doe",
   "handle": "janedoe",
+  "location": "Remote",
   "bio": "Minimalist example.",
   "links": {
     "twitter": "janedoe"
