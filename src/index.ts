@@ -43,6 +43,20 @@ export interface Me3Button {
   icon?: string;
 }
 
+export interface Me3FooterLink {
+  /** Link text */
+  text: string;
+  /** URL to open when clicked */
+  url: string;
+}
+
+export interface Me3Footer {
+  /** Custom footer text (e.g. "Built by Jane") */
+  text?: string;
+  /** Optional custom footer link */
+  link?: Me3FooterLink;
+}
+
 export interface Me3Profile {
   /** Protocol version */
   version: string;
@@ -64,6 +78,12 @@ export interface Me3Profile {
   buttons?: Me3Button[];
   /** Custom pages (markdown) */
   pages?: Me3Page[];
+  /**
+   * Custom footer configuration.
+   * - `undefined`: default footer behavior (renderer-defined)
+   * - `false`: hide footer (renderer may restrict this to Pro tiers)
+   */
+  footer?: Me3Footer | false;
 }
 
 // ============================================================================
@@ -91,6 +111,8 @@ const MAX_BUTTONS = 3;
 const MAX_BUTTON_TEXT_LENGTH = 30;
 const VALID_BUTTON_STYLES = ["primary", "secondary", "outline"];
 const URL_REGEX = /^https?:\/\/.+/i;
+const MAX_FOOTER_TEXT_LENGTH = 200;
+const MAX_FOOTER_LINK_TEXT_LENGTH = 60;
 
 /**
  * Validate a me3 profile object
@@ -244,6 +266,56 @@ export function validateProfile(data: unknown): ValidationResult {
           });
         }
       });
+    }
+  }
+
+  // Footer (optional)
+  if (profile.footer !== undefined) {
+    if (profile.footer === false) {
+      // ok (renderer may enforce tier restrictions)
+    } else if (typeof profile.footer !== "object" || profile.footer === null) {
+      errors.push({
+        field: "footer",
+        message: "Footer must be an object or false",
+      });
+    } else {
+      const footer = profile.footer as Record<string, unknown>;
+
+      if (footer.text !== undefined) {
+        if (typeof footer.text !== "string") {
+          errors.push({ field: "footer.text", message: "Footer text must be a string" });
+        } else if (footer.text.length > MAX_FOOTER_TEXT_LENGTH) {
+          errors.push({
+            field: "footer.text",
+            message: `Footer text must be ${MAX_FOOTER_TEXT_LENGTH} characters or less`,
+          });
+        }
+      }
+
+      if (footer.link !== undefined) {
+        if (typeof footer.link !== "object" || footer.link === null) {
+          errors.push({ field: "footer.link", message: "Footer link must be an object" });
+        } else {
+          const link = footer.link as Record<string, unknown>;
+          if (!link.text || typeof link.text !== "string") {
+            errors.push({ field: "footer.link.text", message: "Footer link text is required" });
+          } else if (link.text.length > MAX_FOOTER_LINK_TEXT_LENGTH) {
+            errors.push({
+              field: "footer.link.text",
+              message: `Footer link text must be ${MAX_FOOTER_LINK_TEXT_LENGTH} characters or less`,
+            });
+          }
+
+          if (!link.url || typeof link.url !== "string") {
+            errors.push({ field: "footer.link.url", message: "Footer link URL is required" });
+          } else if (!URL_REGEX.test(link.url)) {
+            errors.push({
+              field: "footer.link.url",
+              message: "Footer link URL must be a valid URL starting with http:// or https://",
+            });
+          }
+        }
+      }
     }
   }
 

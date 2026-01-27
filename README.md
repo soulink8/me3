@@ -6,7 +6,7 @@ It treats your online identity as a **"Digital Business Card"**—a single JSON 
 
 ## Why it exists (brief)
 
-People increasingly ask AI to *find* a person (to hire, collaborate with, or learn from). Scraping arbitrary personal sites is a failure mode for agents: it’s brittle, slow, and ambiguous. `me.json` is a small, predictable identity endpoint that makes discovery and summarization reliable.
+People increasingly ask AI to _find_ a person (to hire, collaborate with, or learn from). Scraping arbitrary personal sites is a failure mode for agents: it’s brittle, slow, and ambiguous. `me.json` is a small, predictable identity endpoint that makes discovery and summarization reliable.
 
 ## 1. The Specification
 
@@ -36,18 +36,19 @@ Your `me.json` defines who you are and where to find you. It is strictly typed t
 
 ### Core Structure (`Me3Profile`)
 
-| Field     | Type     | Required | Description                                       |
-| :-------- | :------- | :------- | :------------------------------------------------ |
-| `version` | `string` | **Yes**  | Protocol version (currently "0.1").               |
-| `name`    | `string` | **Yes**  | Your display name.                                |
-| `handle`  | `string` | No       | Your preferred username/handle.                   |
-| `bio`     | `string` | No       | Short bio (max 500 chars).                        |
-| `avatar`  | `string` | No       | URL to your profile picture.                      |
-| `banner`  | `string` | No       | URL to a header/banner image.                     |
-| `location`| `string` | No       | Freeform location string (e.g. "Remote").         |
-| `links`   | `object` | No       | Social links (website, github, twitter, etc.).    |
-| `buttons` | `array`  | No       | Primary actions (e.g., "Book Call", "Subscribe"). |
-| `pages`   | `array`  | No       | Custom content pages.                             |
+| Field      | Type     | Required | Description                                       |
+| :--------- | :------- | :------- | :------------------------------------------------ |
+| `version`  | `string` | **Yes**  | Protocol version (currently "0.1").               |
+| `name`     | `string` | **Yes**  | Your display name.                                |
+| `handle`   | `string` | No       | Your preferred username/handle.                   |
+| `bio`      | `string` | No       | Short bio (max 500 chars).                        |
+| `avatar`   | `string` | No       | URL to your profile picture.                      |
+| `banner`   | `string` | No       | URL to a header/banner image.                     |
+| `location` | `string` | No       | Freeform location string (e.g. "Remote").         |
+| `links`    | `object` | No       | Social links (website, github, twitter, etc.).    |
+| `buttons`  | `array`  | No       | Primary actions (e.g., "Book Call", "Subscribe"). |
+| `pages`    | `array`  | No       | Custom content pages.                             |
+| `footer`   | `object` | No       | Custom footer config (or `false` to hide).        |
 
 ### Examples
 

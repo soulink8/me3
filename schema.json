@@ -33,6 +33,38 @@
       ],
       "type": "object"
     },
+    "Me3Footer": {
+      "additionalProperties": false,
+      "properties": {
+        "link": {
+          "$ref": "#/definitions/Me3FooterLink",
+          "description": "Optional custom footer link"
+        },
+        "text": {
+          "description": "Custom footer text (e.g. \"Built by Jane\")",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Me3FooterLink": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "description": "Link text",
+          "type": "string"
+        },
+        "url": {
+          "description": "URL to open when clicked",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "url"
+      ],
+      "type": "object"
+    },
     "Me3Links": {
       "additionalProperties": {
         "anyOf": [
@@ -122,6 +154,18 @@
             "$ref": "#/definitions/Me3Button"
           },
           "type": "array"
+        },
+        "footer": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Me3Footer"
+            },
+            {
+              "const": false,
+              "type": "boolean"
+            }
+          ],
+          "description": "Custom footer configuration.\n- `undefined`: default footer behavior (renderer-defined)\n- `false`: hide footer (renderer may restrict this to Pro tiers)"
         },
         "handle": {
           "description": "Username/handle",
