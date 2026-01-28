@@ -57,6 +57,55 @@ export interface Me3Footer {
   link?: Me3FooterLink;
 }
 
+// ============================================================================
+// Intents - Machine-readable actions visitors can take
+// ============================================================================
+
+/**
+ * Newsletter subscription intent.
+ * When enabled, the site accepts email subscriptions via POST /api/subscribe
+ */
+export interface Me3IntentSubscribe {
+  /** Whether newsletter signups are enabled */
+  enabled: boolean;
+  /** Newsletter title (e.g., "AI Weekly") - for agents to present context */
+  title?: string;
+  /** What subscribers will receive - for agents to explain the value */
+  description?: string;
+  /** How often subscribers will hear from you */
+  frequency?: "daily" | "weekly" | "monthly" | "irregular";
+}
+
+/**
+ * Booking/scheduling intent.
+ * Declares that the person accepts meeting bookings.
+ */
+export interface Me3IntentBook {
+  /** Whether booking is enabled */
+  enabled: boolean;
+  /** Meeting title (e.g., "30-min Consultation") */
+  title?: string;
+  /** What the meeting is about */
+  description?: string;
+  /** Meeting duration in minutes */
+  duration?: number;
+  /** Booking provider (e.g., "cal.com", "calendly") */
+  provider?: string;
+  /** Direct booking URL */
+  url: string;
+}
+
+/**
+ * Intents object - declares what actions visitors/agents can take.
+ * This is the machine-readable API contract for interacting with a person.
+ */
+export interface Me3Intents {
+  /** Newsletter subscription */
+  subscribe?: Me3IntentSubscribe;
+  /** Meeting booking */
+  book?: Me3IntentBook;
+}
+
 export interface Me3Profile {
   /** Protocol version */
   version: string;
@@ -84,6 +133,11 @@ export interface Me3Profile {
    * - `false`: hide footer (renderer may restrict this to Pro tiers)
    */
   footer?: Me3Footer | false;
+  /**
+   * Intents - machine-readable actions that visitors/agents can take.
+   * This is the API contract for interacting with the person.
+   */
+  intents?: Me3Intents;
 }
 
 // ============================================================================
@@ -113,6 +167,9 @@ const VALID_BUTTON_STYLES = ["primary", "secondary", "outline"];
 const URL_REGEX = /^https?:\/\/.+/i;
 const MAX_FOOTER_TEXT_LENGTH = 200;
 const MAX_FOOTER_LINK_TEXT_LENGTH = 60;
+const MAX_INTENT_TITLE_LENGTH = 100;
+const MAX_INTENT_DESCRIPTION_LENGTH = 300;
+const VALID_FREQUENCIES = ["daily", "weekly", "monthly", "irregular"];
 
 /**
  * Validate a me3 profile object
@@ -283,7 +340,10 @@ export function validateProfile(data: unknown): ValidationResult {
 
       if (footer.text !== undefined) {
         if (typeof footer.text !== "string") {
-          errors.push({ field: "footer.text", message: "Footer text must be a string" });
+          errors.push({
+            field: "footer.text",
+            message: "Footer text must be a string",
+          });
         } else if (footer.text.length > MAX_FOOTER_TEXT_LENGTH) {
           errors.push({
             field: "footer.text",
@@ -294,11 +354,17 @@ export function validateProfile(data: unknown): ValidationResult {
 
       if (footer.link !== undefined) {
         if (typeof footer.link !== "object" || footer.link === null) {
-          errors.push({ field: "footer.link", message: "Footer link must be an object" });
+          errors.push({
+            field: "footer.link",
+            message: "Footer link must be an object",
+          });
         } else {
           const link = footer.link as Record<string, unknown>;
           if (!link.text || typeof link.text !== "string") {
-            errors.push({ field: "footer.link.text", message: "Footer link text is required" });
+            errors.push({
+              field: "footer.link.text",
+              message: "Footer link text is required",
+            });
           } else if (link.text.length > MAX_FOOTER_LINK_TEXT_LENGTH) {
             errors.push({
               field: "footer.link.text",
@@ -307,11 +373,15 @@ export function validateProfile(data: unknown): ValidationResult {
           }
 
           if (!link.url || typeof link.url !== "string") {
-            errors.push({ field: "footer.link.url", message: "Footer link URL is required" });
+            errors.push({
+              field: "footer.link.url",
+              message: "Footer link URL is required",
+            });
           } else if (!URL_REGEX.test(link.url)) {
             errors.push({
               field: "footer.link.url",
-              message: "Footer link URL must be a valid URL starting with http:// or https://",
+              message:
+                "Footer link URL must be a valid URL starting with http:// or https://",
             });
           }
         }
@@ -357,6 +427,159 @@ export function validateProfile(data: unknown): ValidationResult {
           });
         }
       });
+    }
+  }
+
+  // Intents (optional)
+  if (profile.intents !== undefined) {
+    if (typeof profile.intents !== "object" || profile.intents === null) {
+      errors.push({ field: "intents", message: "Intents must be an object" });
+    } else {
+      const intents = profile.intents as Record<string, unknown>;
+
+      // Validate subscribe intent
+      if (intents.subscribe !== undefined) {
+        if (
+          typeof intents.subscribe !== "object" ||
+          intents.subscribe === null
+        ) {
+          errors.push({
+            field: "intents.subscribe",
+            message: "Subscribe intent must be an object",
+          });
+        } else {
+          const subscribe = intents.subscribe as Record<string, unknown>;
+
+          if (typeof subscribe.enabled !== "boolean") {
+            errors.push({
+              field: "intents.subscribe.enabled",
+              message: "Subscribe enabled must be a boolean",
+            });
+          }
+
+          if (subscribe.title !== undefined) {
+            if (typeof subscribe.title !== "string") {
+              errors.push({
+                field: "intents.subscribe.title",
+                message: "Subscribe title must be a string",
+              });
+            } else if (subscribe.title.length > MAX_INTENT_TITLE_LENGTH) {
+              errors.push({
+                field: "intents.subscribe.title",
+                message: `Subscribe title must be ${MAX_INTENT_TITLE_LENGTH} characters or less`,
+              });
+            }
+          }
+
+          if (subscribe.description !== undefined) {
+            if (typeof subscribe.description !== "string") {
+              errors.push({
+                field: "intents.subscribe.description",
+                message: "Subscribe description must be a string",
+              });
+            } else if (
+              subscribe.description.length > MAX_INTENT_DESCRIPTION_LENGTH
+            ) {
+              errors.push({
+                field: "intents.subscribe.description",
+                message: `Subscribe description must be ${MAX_INTENT_DESCRIPTION_LENGTH} characters or less`,
+              });
+            }
+          }
+
+          if (
+            subscribe.frequency !== undefined &&
+            !VALID_FREQUENCIES.includes(subscribe.frequency as string)
+          ) {
+            errors.push({
+              field: "intents.subscribe.frequency",
+              message: `Subscribe frequency must be one of: ${VALID_FREQUENCIES.join(", ")}`,
+            });
+          }
+        }
+      }
+
+      // Validate book intent
+      if (intents.book !== undefined) {
+        if (typeof intents.book !== "object" || intents.book === null) {
+          errors.push({
+            field: "intents.book",
+            message: "Book intent must be an object",
+          });
+        } else {
+          const book = intents.book as Record<string, unknown>;
+
+          if (typeof book.enabled !== "boolean") {
+            errors.push({
+              field: "intents.book.enabled",
+              message: "Book enabled must be a boolean",
+            });
+          }
+
+          if (book.title !== undefined) {
+            if (typeof book.title !== "string") {
+              errors.push({
+                field: "intents.book.title",
+                message: "Book title must be a string",
+              });
+            } else if (book.title.length > MAX_INTENT_TITLE_LENGTH) {
+              errors.push({
+                field: "intents.book.title",
+                message: `Book title must be ${MAX_INTENT_TITLE_LENGTH} characters or less`,
+              });
+            }
+          }
+
+          if (book.description !== undefined) {
+            if (typeof book.description !== "string") {
+              errors.push({
+                field: "intents.book.description",
+                message: "Book description must be a string",
+              });
+            } else if (
+              book.description.length > MAX_INTENT_DESCRIPTION_LENGTH
+            ) {
+              errors.push({
+                field: "intents.book.description",
+                message: `Book description must be ${MAX_INTENT_DESCRIPTION_LENGTH} characters or less`,
+              });
+            }
+          }
+
+          if (
+            book.duration !== undefined &&
+            typeof book.duration !== "number"
+          ) {
+            errors.push({
+              field: "intents.book.duration",
+              message: "Book duration must be a number (minutes)",
+            });
+          }
+
+          if (
+            book.provider !== undefined &&
+            typeof book.provider !== "string"
+          ) {
+            errors.push({
+              field: "intents.book.provider",
+              message: "Book provider must be a string",
+            });
+          }
+
+          if (!book.url || typeof book.url !== "string") {
+            errors.push({
+              field: "intents.book.url",
+              message: "Book URL is required",
+            });
+          } else if (!URL_REGEX.test(book.url as string)) {
+            errors.push({
+              field: "intents.book.url",
+              message:
+                "Book URL must be a valid URL starting with http:// or https://",
+            });
+          }
+        }
+      }
     }
   }
 

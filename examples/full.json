@@ -27,5 +27,21 @@
   ],
   "pages": [
     { "slug": "about", "title": "About", "file": "about.md", "visible": true }
-  ]
+  ],
+  "intents": {
+    "subscribe": {
+      "enabled": true,
+      "title": "Weekly Insights",
+      "description": "Curated thoughts on design, tech, and creativity every Sunday",
+      "frequency": "weekly"
+    },
+    "book": {
+      "enabled": true,
+      "title": "30-min Consultation",
+      "description": "Let's discuss your project",
+      "duration": 30,
+      "provider": "cal.com",
+      "url": "https://cal.com/example"
+    }
+  }
 }
