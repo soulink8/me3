@@ -77,6 +77,25 @@ export interface Me3IntentSubscribe {
 }
 
 /**
+ * Availability windows for booking.
+ * Defines when the person is available for meetings.
+ */
+export interface Me3BookingAvailability {
+  /** Timezone for the availability windows (e.g., "America/New_York") */
+  timezone: string;
+  /** Weekly availability windows by day */
+  windows: {
+    monday?: string[];
+    tuesday?: string[];
+    wednesday?: string[];
+    thursday?: string[];
+    friday?: string[];
+    saturday?: string[];
+    sunday?: string[];
+  };
+}
+
+/**
  * Booking/scheduling intent.
  * Declares that the person accepts meeting bookings.
  */
@@ -89,10 +108,12 @@ export interface Me3IntentBook {
   description?: string;
   /** Meeting duration in minutes */
   duration?: number;
-  /** Booking provider (e.g., "cal.com", "calendly") */
+  /** Booking provider (e.g., "cal.com", "calendly") - for external providers */
   provider?: string;
-  /** Direct booking URL */
-  url: string;
+  /** Direct booking URL - for external booking systems */
+  url?: string;
+  /** Availability windows - for native me3 booking */
+  availability?: Me3BookingAvailability;
 }
 
 /**
@@ -566,16 +587,110 @@ export function validateProfile(data: unknown): ValidationResult {
             });
           }
 
-          if (!book.url || typeof book.url !== "string") {
+          // URL is optional if availability is set (native me3 booking)
+          if (book.url !== undefined) {
+            if (typeof book.url !== "string") {
+              errors.push({
+                field: "intents.book.url",
+                message: "Book URL must be a string",
+              });
+            } else if (!URL_REGEX.test(book.url as string)) {
+              errors.push({
+                field: "intents.book.url",
+                message:
+                  "Book URL must be a valid URL starting with http:// or https://",
+              });
+            }
+          }
+
+          // Validate availability if present
+          if (book.availability !== undefined) {
+            if (
+              typeof book.availability !== "object" ||
+              book.availability === null
+            ) {
+              errors.push({
+                field: "intents.book.availability",
+                message: "Book availability must be an object",
+              });
+            } else {
+              const availability = book.availability as Record<string, unknown>;
+
+              if (
+                !availability.timezone ||
+                typeof availability.timezone !== "string"
+              ) {
+                errors.push({
+                  field: "intents.book.availability.timezone",
+                  message: "Availability timezone is required",
+                });
+              }
+
+              if (availability.windows !== undefined) {
+                if (
+                  typeof availability.windows !== "object" ||
+                  availability.windows === null
+                ) {
+                  errors.push({
+                    field: "intents.book.availability.windows",
+                    message: "Availability windows must be an object",
+                  });
+                } else {
+                  const windows = availability.windows as Record<
+                    string,
+                    unknown
+                  >;
+                  const validDays = [
+                    "monday",
+                    "tuesday",
+                    "wednesday",
+                    "thursday",
+                    "friday",
+                    "saturday",
+                    "sunday",
+                  ];
+                  const timeWindowRegex = /^\d{2}:\d{2}-\d{2}:\d{2}$/;
+
+                  for (const [day, value] of Object.entries(windows)) {
+                    if (!validDays.includes(day)) {
+                      errors.push({
+                        field: `intents.book.availability.windows.${day}`,
+                        message: `Invalid day: ${day}`,
+                      });
+                      continue;
+                    }
+
+                    if (!Array.isArray(value)) {
+                      errors.push({
+                        field: `intents.book.availability.windows.${day}`,
+                        message: `Windows for ${day} must be an array`,
+                      });
+                      continue;
+                    }
+
+                    for (const window of value) {
+                      if (
+                        typeof window !== "string" ||
+                        !timeWindowRegex.test(window)
+                      ) {
+                        errors.push({
+                          field: `intents.book.availability.windows.${day}`,
+                          message: `Invalid time window format. Use HH:MM-HH:MM`,
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          // Either URL or availability must be set for booking to work
+          if (!book.url && !book.availability) {
             errors.push({
-              field: "intents.book.url",
-              message: "Book URL is required",
-            });
-          } else if (!URL_REGEX.test(book.url as string)) {
-            errors.push({
-              field: "intents.book.url",
+              field: "intents.book",
               message:
-                "Book URL must be a valid URL starting with http:// or https://",
+                "Book intent requires either a URL (for external booking) or availability (for native booking)",
             });
           }
         }

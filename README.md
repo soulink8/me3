@@ -1,115 +1,126 @@
 # me3 Protocol (me.json)
 
-The **me3 Protocol** (`me.json`) is a minimal standard for portable personal websites.
+**The place machines check before acting on a person.**
 
-It treats your online identity as a **"Digital Business Card"**—a single JSON file that makes you discoverable by both humans and AI agents, without locking you into a specific platform.
+`me.json` is a minimal protocol that lets you declare what actions AI agents and services can take on your behalf—and how.
 
-## Why it exists (brief)
+## The Problem
 
-People increasingly ask AI to _find_ a person (to hire, collaborate with, or learn from). Scraping arbitrary personal sites is a failure mode for agents: it’s brittle, slow, and ambiguous. `me.json` is a small, predictable identity endpoint that makes discovery and summarization reliable.
+Machines are already making decisions about people:
 
-## 1. The Specification
+- "Should I book a meeting with this person?"
+- "Can I subscribe them to updates?"
+- "How should I introduce them?"
 
-### File Location & Discovery
+Without an authoritative source, they guess. They scrape. They get it wrong.
 
-To be compliant, your `me.json` file must be hosted at one of the following locations (in order of priority):
+Schema.org describes _pages_. `me.json` declares _people_—their identity, their preferences, and their **intents**.
 
-1.  **Primary**: `https://yourdomain.com/me.json`
-2.  **Fallback**: `https://yourdomain.com/.well-known/me`
+## The Solution: Intents
 
-### Transport & Security
-
-- **HTTPS Only**: The file must be served over a secure connection.
-- **CORS (Cross-Origin Resource Sharing)**: You **MUST** serve the file with the following header:
-  ```http
-  Access-Control-Allow-Origin: *
-  ```
-  **Why?** This ensures that AI agents running in browsers (e.g., Chrome extensions, web-based assistants) can read your identity file even if they are running on a different domain. Without this, your digital business card is invisible to the tools that help people find you.
-
-### Content Type
-
-The file should be served with `application/json` content type.
-
-## 2. The Schema
-
-Your `me.json` defines who you are and where to find you. It is strictly typed to ensure compatibility across all readers.
-
-### Core Structure (`Me3Profile`)
-
-| Field      | Type     | Required | Description                                       |
-| :--------- | :------- | :------- | :------------------------------------------------ |
-| `version`  | `string` | **Yes**  | Protocol version (currently "0.1").               |
-| `name`     | `string` | **Yes**  | Your display name.                                |
-| `handle`   | `string` | No       | Your preferred username/handle.                   |
-| `bio`      | `string` | No       | Short bio (max 500 chars).                        |
-| `avatar`   | `string` | No       | URL to your profile picture.                      |
-| `banner`   | `string` | No       | URL to a header/banner image.                     |
-| `location` | `string` | No       | Freeform location string (e.g. "Remote").         |
-| `links`    | `object` | No       | Social links (website, github, twitter, etc.).    |
-| `buttons`  | `array`  | No       | Primary actions (e.g., "Book Call", "Subscribe"). |
-| `pages`    | `array`  | No       | Custom content pages.                             |
-| `footer`   | `object` | No       | Custom footer config (or `false` to hide).        |
-
-### Examples
-
-Minimal:
+The core of `me.json` is the `intents` object—machine-readable declarations of what visitors and agents can do:
 
 ```json
 {
   "version": "0.1",
   "name": "Jane Doe",
-  "handle": "janedoe",
-  "bio": "Building the open web. Creative Director at Studio X.",
-  "location": "Berlin, Germany",
-  "avatar": "https://example.com/jane.jpg",
-  "links": {
-    "website": "https://janedoe.com",
-    "twitter": "janedoe",
-    "github": "janedoe"
-  },
-  "buttons": [
-    {
-      "text": "Hire Me",
-      "url": "https://cal.com/janedoe",
-      "style": "primary"
+  "bio": "Creative Director at Studio X",
+  "intents": {
+    "subscribe": {
+      "enabled": true,
+      "title": "Design Weekly",
+      "description": "Curated design links every Sunday",
+      "frequency": "weekly"
+    },
+    "book": {
+      "enabled": true,
+      "title": "30-min Consultation",
+      "description": "Let's discuss your project",
+      "duration": 30,
+      "url": "https://cal.com/janedoe"
     }
-  ]
+  }
 }
 ```
 
-More complete examples live in [`examples/`](./examples/), including [`examples/simple.json`](./examples/simple.json) and [`examples/full.json`](./examples/full.json).
+**Without `me.json`**: An AI asked "Can I book a call with Jane?" has to guess, scrape her site, or fail.
 
-## 3. What it is NOT
+**With `me.json`**: The AI reads `intents.book`, confirms it's enabled, and knows exactly where to send the user.
 
-- **NOT Authentication**: `me.json` is public data. It does not handle logins, passwords, or private keys.
-- **NOT a Social Network**: There is no "feed", no "likes", and no central server. You own your data.
-- **NOT a Platform**: You can host this file on GitHub Pages, Vercel, WordPress, or your own server.
-- **NOT Reputation / Ranking**: No scoring, ranking, endorsements, verification, or algorithmic ordering.
+That's the protocol's value: **authority before action**.
 
-## 4. Guardrails & versioning
+## Supported Intents
 
-- **Current version**: `0.1` (see `version` field). Validators in this repo currently require `version === "0.1"`.
-- **Backwards compatibility**: `0.1` is intended to stay stable. Changes should be additive and conservative.
-- **Extensions**: top-level fields are intentionally strict. If you need custom keys, prefer placing them under `links` (e.g. `"links": { "mastodon": "...", "custom": "..." }`) until the protocol defines a first-class place for extensions.
+| Intent      | Purpose                      | Key Fields                                           |
+| :---------- | :--------------------------- | :--------------------------------------------------- |
+| `subscribe` | Newsletter/updates signup    | `enabled`, `title`, `description`, `frequency`       |
+| `book`      | Meeting/consultation booking | `enabled`, `title`, `description`, `url`, `duration` |
 
-## 5. Usage
+More intents (like `contact` for routing preferences) are planned.
 
-### For Developers
+---
 
-You can use this package to validate `me.json` files in your applications.
+## Full Schema
+
+Beyond intents, `me.json` includes identity and presentation fields:
+
+| Field      | Type     | Required | Description                                          |
+| :--------- | :------- | :------- | :--------------------------------------------------- |
+| `version`  | `string` | **Yes**  | Protocol version (currently `"0.1"`).                |
+| `name`     | `string` | **Yes**  | Display name.                                        |
+| `handle`   | `string` | No       | Preferred username/handle.                           |
+| `bio`      | `string` | No       | Short bio (max 500 chars).                           |
+| `avatar`   | `string` | No       | Profile picture URL.                                 |
+| `banner`   | `string` | No       | Header/banner image URL.                             |
+| `location` | `string` | No       | Freeform location (e.g., "Berlin" or "Remote").      |
+| `links`    | `object` | No       | Social links (`website`, `github`, `twitter`, etc.). |
+| `buttons`  | `array`  | No       | Call-to-action buttons for human visitors.           |
+| `pages`    | `array`  | No       | Custom content pages (markdown).                     |
+| `intents`  | `object` | No       | Machine-actionable declarations (see above).         |
+| `footer`   | `object` | No       | Footer config (or `false` to hide).                  |
+
+See [`examples/full.json`](./examples/full.json) for a complete example.
+
+---
+
+## Hosting & Discovery
+
+Your `me.json` must be publicly accessible at:
+
+1. **Primary**: `https://yourdomain.com/me.json`
+2. **Fallback**: `https://yourdomain.com/.well-known/me`
+
+### Requirements
+
+- **HTTPS only**
+- **CORS enabled**: Serve with `Access-Control-Allow-Origin: *` so browser-based agents can read it
+- **Content-Type**: `application/json`
+
+---
+
+## What me.json is NOT
+
+- **NOT authentication** — This is public data. No logins, no private keys.
+- **NOT a social network** — No feeds, no likes, no central server.
+- **NOT a platform** — Host it anywhere: GitHub Pages, Vercel, your own server.
+- **NOT reputation** — No scores, rankings, or verification.
+
+---
+
+## Usage
+
+### Install
 
 ```bash
 npm install me3-protocol
 ```
 
+### Validate
+
 ```typescript
 import { validateProfile, parseMe3Json } from "me3-protocol";
 
-// Validate an object
-const result = validateProfile(myProfileData);
-
-// Parse and validate a string
-const result = parseMe3Json(jsonString);
+const result = validateProfile(profileData);
 
 if (!result.valid) {
   console.error(result.errors);
@@ -118,4 +129,12 @@ if (!result.valid) {
 
 ### JSON Schema
 
-A standard JSON Schema is available in [schema.json](./schema.json) for non-TypeScript implementations.
+A standard JSON Schema is available at [`schema.json`](./schema.json).
+
+---
+
+## Versioning
+
+- **Current version**: `0.1`
+- **Stability**: Additive changes only. Breaking changes require a version bump.
+- **Extensions**: Custom fields should go under `links` until the protocol defines extension points.

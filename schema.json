@@ -2,6 +2,70 @@
   "$ref": "#/definitions/Me3Profile",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "Me3BookingAvailability": {
+      "additionalProperties": false,
+      "description": "Availability windows for booking. Defines when the person is available for meetings.",
+      "properties": {
+        "timezone": {
+          "description": "Timezone for the availability windows (e.g., \"America/New_York\")",
+          "type": "string"
+        },
+        "windows": {
+          "additionalProperties": false,
+          "description": "Weekly availability windows by day",
+          "properties": {
+            "friday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "monday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "saturday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "sunday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "thursday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "tuesday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "wednesday": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "timezone",
+        "windows"
+      ],
+      "type": "object"
+    },
     "Me3Button": {
       "additionalProperties": false,
       "properties": {
@@ -69,6 +133,10 @@
       "additionalProperties": false,
       "description": "Booking/scheduling intent. Declares that the person accepts meeting bookings.",
       "properties": {
+        "availability": {
+          "$ref": "#/definitions/Me3BookingAvailability",
+          "description": "Availability windows - for native me3 booking"
+        },
         "description": {
           "description": "What the meeting is about",
           "type": "string"
@@ -82,7 +150,7 @@
           "type": "boolean"
         },
         "provider": {
-          "description": "Booking provider (e.g., \"cal.com\", \"calendly\")",
+          "description": "Booking provider (e.g., \"cal.com\", \"calendly\") - for external providers",
           "type": "string"
         },
         "title": {
@@ -90,13 +158,12 @@
           "type": "string"
         },
         "url": {
-          "description": "Direct booking URL",
+          "description": "Direct booking URL - for external booking systems",
           "type": "string"
         }
       },
       "required": [
-        "enabled",
-        "url"
+        "enabled"
       ],
       "type": "object"
     },

@@ -40,8 +40,16 @@
       "title": "30-min Consultation",
       "description": "Let's discuss your project",
       "duration": 30,
-      "provider": "cal.com",
-      "url": "https://cal.com/example"
+      "availability": {
+        "timezone": "America/New_York",
+        "windows": {
+          "monday": ["09:00-12:00", "14:00-17:00"],
+          "tuesday": ["09:00-17:00"],
+          "wednesday": ["09:00-17:00"],
+          "thursday": ["09:00-17:00"],
+          "friday": ["09:00-12:00"]
+        }
+      }
     }
   }
 }
