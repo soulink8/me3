@@ -60,7 +60,10 @@
           "type": "object"
         }
       },
-      "required": ["timezone", "windows"],
+      "required": [
+        "timezone",
+        "windows"
+      ],
       "type": "object"
     },
     "Me3Button": {
@@ -72,7 +75,11 @@
         },
         "style": {
           "description": "Button style",
-          "enum": ["primary", "secondary", "outline"],
+          "enum": [
+            "primary",
+            "secondary",
+            "outline"
+          ],
           "type": "string"
         },
         "text": {
@@ -84,7 +91,10 @@
           "type": "string"
         }
       },
-      "required": ["text", "url"],
+      "required": [
+        "text",
+        "url"
+      ],
       "type": "object"
     },
     "Me3Footer": {
@@ -113,7 +123,10 @@
           "type": "string"
         }
       },
-      "required": ["text", "url"],
+      "required": [
+        "text",
+        "url"
+      ],
       "type": "object"
     },
     "Me3IntentBook": {
@@ -149,7 +162,9 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
       "type": "object"
     },
     "Me3IntentSubscribe": {
@@ -166,7 +181,12 @@
         },
         "frequency": {
           "description": "How often subscribers will hear from you",
-          "enum": ["daily", "weekly", "monthly", "irregular"],
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "irregular"
+          ],
           "type": "string"
         },
         "title": {
@@ -174,7 +194,9 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
       "type": "object"
     },
     "Me3Intents": {
@@ -252,15 +274,27 @@
           "type": "boolean"
         }
       },
-      "required": ["slug", "title", "file", "visible"],
+      "required": [
+        "slug",
+        "title",
+        "file",
+        "visible"
+      ],
       "type": "object"
     },
     "Me3Post": {
       "additionalProperties": false,
-      "description": "Blog post entry for portable sites.",
       "properties": {
+        "excerpt": {
+          "description": "Short excerpt for archive/listing (optional)",
+          "type": "string"
+        },
         "file": {
           "description": "Path to markdown file (relative to me.json)",
+          "type": "string"
+        },
+        "publishedAt": {
+          "description": "ISO publish date (optional)",
           "type": "string"
         },
         "slug": {
@@ -270,17 +304,13 @@
         "title": {
           "description": "Display name for listing",
           "type": "string"
-        },
-        "publishedAt": {
-          "description": "ISO publish date (optional)",
-          "type": "string"
-        },
-        "excerpt": {
-          "description": "Short excerpt for archive/listing (optional)",
-          "type": "string"
         }
       },
-      "required": ["slug", "title", "file"],
+      "required": [
+        "slug",
+        "title",
+        "file"
+      ],
       "type": "object"
     },
     "Me3Profile": {
@@ -356,7 +386,10 @@
           "type": "string"
         }
       },
-      "required": ["version", "name"],
+      "required": [
+        "version",
+        "name"
+      ],
       "type": "object"
     }
   }
