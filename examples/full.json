@@ -28,6 +28,15 @@
   "pages": [
     { "slug": "about", "title": "About", "file": "about.md", "visible": true }
   ],
+  "posts": [
+    {
+      "slug": "hello-world",
+      "title": "Hello World",
+      "file": "blog/hello-world.md",
+      "publishedAt": "2026-01-29T12:00:00.000Z",
+      "excerpt": "A short welcome post for the blog."
+    }
+  ],
   "intents": {
     "subscribe": {
       "enabled": true,

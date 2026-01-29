@@ -20,6 +20,19 @@ export interface Me3Page {
   visible: boolean;
 }
 
+export interface Me3Post {
+  /** URL-friendly identifier */
+  slug: string;
+  /** Display name for listing */
+  title: string;
+  /** Path to markdown file (relative to me.json) */
+  file: string;
+  /** ISO publish date (optional) */
+  publishedAt?: string;
+  /** Short excerpt for archive/listing (optional) */
+  excerpt?: string;
+}
+
 export interface Me3Links {
   website?: string;
   github?: string;
@@ -148,6 +161,8 @@ export interface Me3Profile {
   buttons?: Me3Button[];
   /** Custom pages (markdown) */
   pages?: Me3Page[];
+  /** Blog posts (markdown) */
+  posts?: Me3Post[];
   /**
    * Custom footer configuration.
    * - `undefined`: default footer behavior (renderer-defined)
@@ -445,6 +460,57 @@ export function validateProfile(data: unknown): ValidationResult {
           errors.push({
             field: `pages[${index}].visible`,
             message: "Page visible must be a boolean",
+          });
+        }
+      });
+    }
+  }
+
+  // Posts (optional)
+  if ((profile as any).posts !== undefined) {
+    const posts = (profile as any).posts;
+    if (!Array.isArray(posts)) {
+      errors.push({ field: "posts", message: "Posts must be an array" });
+    } else {
+      posts.forEach((post: any, index: number) => {
+        if (!post || typeof post !== "object") {
+          errors.push({
+            field: `posts[${index}]`,
+            message: "Post must be an object",
+          });
+          return;
+        }
+        if (!post.slug || typeof post.slug !== "string") {
+          errors.push({
+            field: `posts[${index}].slug`,
+            message: "Post slug is required",
+          });
+        }
+        if (!post.title || typeof post.title !== "string") {
+          errors.push({
+            field: `posts[${index}].title`,
+            message: "Post title is required",
+          });
+        }
+        if (!post.file || typeof post.file !== "string") {
+          errors.push({
+            field: `posts[${index}].file`,
+            message: "Post file is required",
+          });
+        }
+        if (
+          post.publishedAt !== undefined &&
+          typeof post.publishedAt !== "string"
+        ) {
+          errors.push({
+            field: `posts[${index}].publishedAt`,
+            message: "Post publishedAt must be a string",
+          });
+        }
+        if (post.excerpt !== undefined && typeof post.excerpt !== "string") {
+          errors.push({
+            field: `posts[${index}].excerpt`,
+            message: "Post excerpt must be a string",
           });
         }
       });
