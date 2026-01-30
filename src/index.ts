@@ -33,6 +33,27 @@ export interface Me3Post {
   excerpt?: string;
 }
 
+export interface Me3Product {
+  /** URL-friendly identifier */
+  slug: string;
+  /** Product name */
+  title: string;
+  /** Path to markdown file (relative to me.json) */
+  file: string;
+  /** Product price in cents (e.g., 2999 for $29.99) */
+  price: number;
+  /** Currency code */
+  currency: "USD" | "GBP" | "EUR";
+  /** Product images (URLs) */
+  images?: string[];
+  /** Whether product is available for purchase */
+  available?: boolean;
+  /** ISO publish date (optional) */
+  publishedAt?: string;
+  /** Short excerpt for listings (optional) */
+  excerpt?: string;
+}
+
 export interface Me3Links {
   website?: string;
   github?: string;
@@ -158,6 +179,21 @@ export interface Me3IntentBook {
 }
 
 /**
+ * Shop intent.
+ * Declares that the person sells products via a simple shop.
+ */
+export interface Me3IntentShop {
+  /** Whether shop is enabled */
+  enabled: boolean;
+  /** Shop title/name */
+  title?: string;
+  /** Shop description */
+  description?: string;
+  /** Shop currency */
+  currency: "USD" | "GBP" | "EUR";
+}
+
+/**
  * Intents object - declares what actions visitors/agents can take.
  * This is the machine-readable API contract for interacting with a person.
  */
@@ -166,6 +202,8 @@ export interface Me3Intents {
   subscribe?: Me3IntentSubscribe;
   /** Meeting booking */
   book?: Me3IntentBook;
+  /** Shop intent */
+  shop?: Me3IntentShop;
 }
 
 export interface Me3Profile {
@@ -191,6 +229,8 @@ export interface Me3Profile {
   pages?: Me3Page[];
   /** Blog posts (markdown) */
   posts?: Me3Post[];
+  /** Products (markdown) */
+  products?: Me3Product[];
   /**
    * Custom footer configuration.
    * - `undefined`: default footer behavior (renderer-defined)
@@ -238,6 +278,7 @@ const MAX_FOOTER_LINK_TEXT_LENGTH = 60;
 const MAX_INTENT_TITLE_LENGTH = 100;
 const MAX_INTENT_DESCRIPTION_LENGTH = 300;
 const VALID_FREQUENCIES = ["daily", "weekly", "monthly", "irregular"];
+const VALID_CURRENCIES = ["USD", "GBP", "EUR"];
 
 /**
  * Validate a me3 profile object
@@ -549,6 +590,99 @@ export function validateProfile(data: unknown): ValidationResult {
     }
   }
 
+  // Products (optional)
+  if ((profile as any).products !== undefined) {
+    const products = (profile as any).products;
+    if (!Array.isArray(products)) {
+      errors.push({ field: "products", message: "Products must be an array" });
+    } else {
+      products.forEach((product: any, index: number) => {
+        if (!product || typeof product !== "object") {
+          errors.push({
+            field: `products[${index}]`,
+            message: "Product must be an object",
+          });
+          return;
+        }
+        if (!product.slug || typeof product.slug !== "string") {
+          errors.push({
+            field: `products[${index}].slug`,
+            message: "Product slug is required",
+          });
+        }
+        if (!product.title || typeof product.title !== "string") {
+          errors.push({
+            field: `products[${index}].title`,
+            message: "Product title is required",
+          });
+        }
+        if (!product.file || typeof product.file !== "string") {
+          errors.push({
+            field: `products[${index}].file`,
+            message: "Product file is required",
+          });
+        }
+        if (typeof product.price !== "number") {
+          errors.push({
+            field: `products[${index}].price`,
+            message: "Product price must be a number (in cents)",
+          });
+        }
+        if (
+          typeof product.currency !== "string" ||
+          !VALID_CURRENCIES.includes(product.currency)
+        ) {
+          errors.push({
+            field: `products[${index}].currency`,
+            message: `Product currency must be one of: ${VALID_CURRENCIES.join(", ")}`,
+          });
+        }
+        if (
+          product.available !== undefined &&
+          typeof product.available !== "boolean"
+        ) {
+          errors.push({
+            field: `products[${index}].available`,
+            message: "Product available must be a boolean",
+          });
+        }
+        if (product.images !== undefined) {
+          if (!Array.isArray(product.images)) {
+            errors.push({
+              field: `products[${index}].images`,
+              message: "Product images must be an array of strings",
+            });
+          } else if (
+            product.images.some((img: any) => typeof img !== "string")
+          ) {
+            errors.push({
+              field: `products[${index}].images`,
+              message: "Product images must be an array of strings",
+            });
+          }
+        }
+        if (
+          product.publishedAt !== undefined &&
+          typeof product.publishedAt !== "string"
+        ) {
+          errors.push({
+            field: `products[${index}].publishedAt`,
+            message: "Product publishedAt must be a string",
+          });
+        }
+        if (
+          product.excerpt !== undefined &&
+          typeof product.excerpt !== "string"
+        ) {
+          errors.push({
+            field: `products[${index}].excerpt`,
+            message: "Product excerpt must be a string",
+          });
+        }
+      });
+    }
+  }
+
   // Intents (optional)
   if (profile.intents !== undefined) {
     if (typeof profile.intents !== "object" || profile.intents === null) {
@@ -822,14 +956,13 @@ export function validateProfile(data: unknown): ValidationResult {
                   });
                 }
 
-                const validCurrencies = ["USD", "GBP", "EUR"];
                 if (
                   typeof pricing.currency !== "string" ||
-                  !validCurrencies.includes(pricing.currency)
+                  !VALID_CURRENCIES.includes(pricing.currency)
                 ) {
                   errors.push({
                     field: "intents.book.pricing.currency",
-                    message: `Currency must be one of: ${validCurrencies.join(", ")}`,
+                    message: `Currency must be one of: ${VALID_CURRENCIES.join(", ")}`,
                   });
                 }
 
@@ -848,6 +981,65 @@ export function validateProfile(data: unknown): ValidationResult {
                 }
               }
             }
+          }
+        }
+      }
+
+      // Validate shop intent
+      if (intents.shop !== undefined) {
+        if (typeof intents.shop !== "object" || intents.shop === null) {
+          errors.push({
+            field: "intents.shop",
+            message: "Shop intent must be an object",
+          });
+        } else {
+          const shop = intents.shop as Record<string, unknown>;
+
+          if (typeof shop.enabled !== "boolean") {
+            errors.push({
+              field: "intents.shop.enabled",
+              message: "Shop enabled must be a boolean",
+            });
+          }
+
+          if (shop.title !== undefined) {
+            if (typeof shop.title !== "string") {
+              errors.push({
+                field: "intents.shop.title",
+                message: "Shop title must be a string",
+              });
+            } else if (shop.title.length > MAX_INTENT_TITLE_LENGTH) {
+              errors.push({
+                field: "intents.shop.title",
+                message: `Shop title must be ${MAX_INTENT_TITLE_LENGTH} characters or less`,
+              });
+            }
+          }
+
+          if (shop.description !== undefined) {
+            if (typeof shop.description !== "string") {
+              errors.push({
+                field: "intents.shop.description",
+                message: "Shop description must be a string",
+              });
+            } else if (
+              shop.description.length > MAX_INTENT_DESCRIPTION_LENGTH
+            ) {
+              errors.push({
+                field: "intents.shop.description",
+                message: `Shop description must be ${MAX_INTENT_DESCRIPTION_LENGTH} characters or less`,
+              });
+            }
+          }
+
+          if (
+            typeof shop.currency !== "string" ||
+            !VALID_CURRENCIES.includes(shop.currency)
+          ) {
+            errors.push({
+              field: "intents.shop.currency",
+              message: `Shop currency must be one of: ${VALID_CURRENCIES.join(", ")}`,
+            });
           }
         }
       }

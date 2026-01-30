@@ -60,7 +60,10 @@
           "type": "object"
         }
       },
-      "required": ["timezone", "windows"],
+      "required": [
+        "timezone",
+        "windows"
+      ],
       "type": "object"
     },
     "Me3BookingPricing": {
@@ -73,7 +76,11 @@
         },
         "currency": {
           "description": "Currency code",
-          "enum": ["USD", "GBP", "EUR"],
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
           "type": "string"
         },
         "enabled": {
@@ -108,7 +115,11 @@
         },
         "style": {
           "description": "Button style",
-          "enum": ["primary", "secondary", "outline"],
+          "enum": [
+            "primary",
+            "secondary",
+            "outline"
+          ],
           "type": "string"
         },
         "text": {
@@ -120,7 +131,10 @@
           "type": "string"
         }
       },
-      "required": ["text", "url"],
+      "required": [
+        "text",
+        "url"
+      ],
       "type": "object"
     },
     "Me3Footer": {
@@ -149,7 +163,10 @@
           "type": "string"
         }
       },
-      "required": ["text", "url"],
+      "required": [
+        "text",
+        "url"
+      ],
       "type": "object"
     },
     "Me3IntentBook": {
@@ -189,7 +206,41 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
+      "type": "object"
+    },
+    "Me3IntentShop": {
+      "additionalProperties": false,
+      "description": "Shop intent. Declares that the person sells products via a simple shop.",
+      "properties": {
+        "currency": {
+          "description": "Shop currency",
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
+          "type": "string"
+        },
+        "description": {
+          "description": "Shop description",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Whether shop is enabled",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "Shop title/name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "currency"
+      ],
       "type": "object"
     },
     "Me3IntentSubscribe": {
@@ -206,7 +257,12 @@
         },
         "frequency": {
           "description": "How often subscribers will hear from you",
-          "enum": ["daily", "weekly", "monthly", "irregular"],
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "irregular"
+          ],
           "type": "string"
         },
         "title": {
@@ -214,7 +270,9 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
       "type": "object"
     },
     "Me3Intents": {
@@ -224,6 +282,10 @@
         "book": {
           "$ref": "#/definitions/Me3IntentBook",
           "description": "Meeting booking"
+        },
+        "shop": {
+          "$ref": "#/definitions/Me3IntentShop",
+          "description": "Shop intent"
         },
         "subscribe": {
           "$ref": "#/definitions/Me3IntentSubscribe",
@@ -292,7 +354,12 @@
           "type": "boolean"
         }
       },
-      "required": ["slug", "title", "file", "visible"],
+      "required": [
+        "slug",
+        "title",
+        "file",
+        "visible"
+      ],
       "type": "object"
     },
     "Me3Post": {
@@ -319,7 +386,68 @@
           "type": "string"
         }
       },
-      "required": ["slug", "title", "file"],
+      "required": [
+        "slug",
+        "title",
+        "file"
+      ],
+      "type": "object"
+    },
+    "Me3Product": {
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "description": "Whether product is available for purchase",
+          "type": "boolean"
+        },
+        "currency": {
+          "description": "Currency code",
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
+          "type": "string"
+        },
+        "excerpt": {
+          "description": "Short excerpt for listings (optional)",
+          "type": "string"
+        },
+        "file": {
+          "description": "Path to markdown file (relative to me.json)",
+          "type": "string"
+        },
+        "images": {
+          "description": "Product images (URLs)",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "price": {
+          "description": "Product price in cents (e.g., 2999 for $29.99)",
+          "type": "number"
+        },
+        "publishedAt": {
+          "description": "ISO publish date (optional)",
+          "type": "string"
+        },
+        "slug": {
+          "description": "URL-friendly identifier",
+          "type": "string"
+        },
+        "title": {
+          "description": "Product name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "slug",
+        "title",
+        "file",
+        "price",
+        "currency"
+      ],
       "type": "object"
     },
     "Me3Profile": {
@@ -390,6 +518,13 @@
           },
           "type": "array"
         },
+        "products": {
+          "description": "Products (markdown)",
+          "items": {
+            "$ref": "#/definitions/Me3Product"
+          },
+          "type": "array"
+        },
         "verification": {
           "$ref": "#/definitions/Me3Verification",
           "description": "Human verification status (populated from account, not editable per-site)"
@@ -399,7 +534,10 @@
           "type": "string"
         }
       },
-      "required": ["version", "name"],
+      "required": [
+        "version",
+        "name"
+      ],
       "type": "object"
     },
     "Me3Verification": {
@@ -418,7 +556,9 @@
           "type": "string"
         }
       },
-      "required": ["verified"],
+      "required": [
+        "verified"
+      ],
       "type": "object"
     }
   }
