@@ -425,6 +425,10 @@
           },
           "type": "array"
         },
+        "verification": {
+          "$ref": "#/definitions/Me3Verification",
+          "description": "Human verification status (populated from account, not editable per-site)"
+        },
         "version": {
           "description": "Protocol version",
           "type": "string"
@@ -433,6 +437,27 @@
       "required": [
         "version",
         "name"
+      ],
+      "type": "object"
+    },
+    "Me3Verification": {
+      "additionalProperties": false,
+      "properties": {
+        "verified": {
+          "description": "Whether the author is a verified human",
+          "type": "boolean"
+        },
+        "verifiedAt": {
+          "description": "When verification occurred (ISO timestamp)",
+          "type": "string"
+        },
+        "verifiedDomain": {
+          "description": "The domain used for verification",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verified"
       ],
       "type": "object"
     }

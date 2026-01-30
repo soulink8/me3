@@ -70,6 +70,15 @@ export interface Me3Footer {
   link?: Me3FooterLink;
 }
 
+export interface Me3Verification {
+  /** Whether the author is a verified human */
+  verified: boolean;
+  /** The domain used for verification */
+  verifiedDomain?: string;
+  /** When verification occurred (ISO timestamp) */
+  verifiedAt?: string;
+}
+
 // ============================================================================
 // Intents - Machine-readable actions visitors can take
 // ============================================================================
@@ -193,6 +202,10 @@ export interface Me3Profile {
    * This is the API contract for interacting with the person.
    */
   intents?: Me3Intents;
+  /**
+   * Human verification status (populated from account, not editable per-site)
+   */
+  verification?: Me3Verification;
 }
 
 // ============================================================================
