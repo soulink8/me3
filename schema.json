@@ -66,6 +66,46 @@
       ],
       "type": "object"
     },
+    "Me3BookingPricing": {
+      "additionalProperties": false,
+      "description": "Booking pricing configuration. Allows hosts to charge for meetings with a sliding scale pay-what-you-want model.",
+      "properties": {
+        "allowFree": {
+          "description": "Whether to allow free meetings alongside paid ones",
+          "type": "boolean"
+        },
+        "currency": {
+          "description": "Currency code",
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
+          "type": "string"
+        },
+        "enabled": {
+          "description": "Whether paid meetings are enabled",
+          "type": "boolean"
+        },
+        "minimumAmount": {
+          "const": 5,
+          "description": "Minimum amount bookers can pay (always $5)",
+          "type": "number"
+        },
+        "suggestedAmount": {
+          "description": "Suggested price amount in dollars (e.g., 50 for $50)",
+          "type": "number"
+        }
+      },
+      "required": [
+        "enabled",
+        "suggestedAmount",
+        "currency",
+        "minimumAmount",
+        "allowFree"
+      ],
+      "type": "object"
+    },
     "Me3Button": {
       "additionalProperties": false,
       "properties": {
@@ -148,6 +188,10 @@
         "enabled": {
           "description": "Whether booking is enabled",
           "type": "boolean"
+        },
+        "pricing": {
+          "$ref": "#/definitions/Me3BookingPricing",
+          "description": "Pricing configuration for paid meetings (optional)"
         },
         "provider": {
           "description": "Booking provider (e.g., \"cal.com\", \"calendly\") - for external providers",

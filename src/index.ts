@@ -109,6 +109,23 @@ export interface Me3BookingAvailability {
 }
 
 /**
+ * Booking pricing configuration.
+ * Allows hosts to charge for meetings with a sliding scale pay-what-you-want model.
+ */
+export interface Me3BookingPricing {
+  /** Whether paid meetings are enabled */
+  enabled: boolean;
+  /** Suggested price amount in dollars (e.g., 50 for $50) */
+  suggestedAmount: number;
+  /** Currency code */
+  currency: "USD" | "GBP" | "EUR";
+  /** Minimum amount bookers can pay (always $5) */
+  minimumAmount: 5;
+  /** Whether to allow free meetings alongside paid ones */
+  allowFree: boolean;
+}
+
+/**
  * Booking/scheduling intent.
  * Declares that the person accepts meeting bookings.
  */
@@ -127,6 +144,8 @@ export interface Me3IntentBook {
   url?: string;
   /** Availability windows - for native me3 booking */
   availability?: Me3BookingAvailability;
+  /** Pricing configuration for paid meetings (optional) */
+  pricing?: Me3BookingPricing;
 }
 
 /**
@@ -758,6 +777,64 @@ export function validateProfile(data: unknown): ValidationResult {
               message:
                 "Book intent requires either a URL (for external booking) or availability (for native booking)",
             });
+          }
+
+          // Validate pricing if present
+          if (book.pricing !== undefined) {
+            if (typeof book.pricing !== "object" || book.pricing === null) {
+              errors.push({
+                field: "intents.book.pricing",
+                message: "Book pricing must be an object",
+              });
+            } else {
+              const pricing = book.pricing as Record<string, unknown>;
+
+              if (typeof pricing.enabled !== "boolean") {
+                errors.push({
+                  field: "intents.book.pricing.enabled",
+                  message: "Pricing enabled must be a boolean",
+                });
+              }
+
+              if (pricing.enabled) {
+                if (typeof pricing.suggestedAmount !== "number") {
+                  errors.push({
+                    field: "intents.book.pricing.suggestedAmount",
+                    message: "Suggested amount must be a number",
+                  });
+                } else if (pricing.suggestedAmount < 5) {
+                  errors.push({
+                    field: "intents.book.pricing.suggestedAmount",
+                    message: "Suggested amount must be at least $5",
+                  });
+                }
+
+                const validCurrencies = ["USD", "GBP", "EUR"];
+                if (
+                  typeof pricing.currency !== "string" ||
+                  !validCurrencies.includes(pricing.currency)
+                ) {
+                  errors.push({
+                    field: "intents.book.pricing.currency",
+                    message: `Currency must be one of: ${validCurrencies.join(", ")}`,
+                  });
+                }
+
+                if (pricing.minimumAmount !== 5) {
+                  errors.push({
+                    field: "intents.book.pricing.minimumAmount",
+                    message: "Minimum amount must be 5",
+                  });
+                }
+
+                if (typeof pricing.allowFree !== "boolean") {
+                  errors.push({
+                    field: "intents.book.pricing.allowFree",
+                    message: "Allow free must be a boolean",
+                  });
+                }
+              }
+            }
           }
         }
       }
