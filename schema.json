@@ -60,10 +60,7 @@
           "type": "object"
         }
       },
-      "required": [
-        "timezone",
-        "windows"
-      ],
+      "required": ["timezone", "windows"],
       "type": "object"
     },
     "Me3BookingPricing": {
@@ -76,11 +73,7 @@
         },
         "currency": {
           "description": "Currency code",
-          "enum": [
-            "USD",
-            "GBP",
-            "EUR"
-          ],
+          "enum": ["USD", "GBP", "EUR"],
           "type": "string"
         },
         "enabled": {
@@ -115,11 +108,7 @@
         },
         "style": {
           "description": "Button style",
-          "enum": [
-            "primary",
-            "secondary",
-            "outline"
-          ],
+          "enum": ["primary", "secondary", "outline"],
           "type": "string"
         },
         "text": {
@@ -131,10 +120,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "text",
-        "url"
-      ],
+      "required": ["text", "url"],
       "type": "object"
     },
     "Me3Footer": {
@@ -163,10 +149,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "text",
-        "url"
-      ],
+      "required": ["text", "url"],
       "type": "object"
     },
     "Me3IntentBook": {
@@ -206,9 +189,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "enabled"
-      ],
+      "required": ["enabled"],
       "type": "object"
     },
     "Me3IntentSubscribe": {
@@ -225,12 +206,7 @@
         },
         "frequency": {
           "description": "How often subscribers will hear from you",
-          "enum": [
-            "daily",
-            "weekly",
-            "monthly",
-            "irregular"
-          ],
+          "enum": ["daily", "weekly", "monthly", "irregular"],
           "type": "string"
         },
         "title": {
@@ -238,9 +214,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "enabled"
-      ],
+      "required": ["enabled"],
       "type": "object"
     },
     "Me3Intents": {
@@ -318,12 +292,7 @@
           "type": "boolean"
         }
       },
-      "required": [
-        "slug",
-        "title",
-        "file",
-        "visible"
-      ],
+      "required": ["slug", "title", "file", "visible"],
       "type": "object"
     },
     "Me3Post": {
@@ -350,11 +319,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "slug",
-        "title",
-        "file"
-      ],
+      "required": ["slug", "title", "file"],
       "type": "object"
     },
     "Me3Profile": {
@@ -434,10 +399,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "version",
-        "name"
-      ],
+      "required": ["version", "name"],
       "type": "object"
     },
     "Me3Verification": {
@@ -456,9 +418,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "verified"
-      ],
+      "required": ["verified"],
       "type": "object"
     }
   }
