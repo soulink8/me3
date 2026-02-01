@@ -31,6 +31,8 @@ export interface Me3Post {
   publishedAt?: string;
   /** Short excerpt for archive/listing (optional) */
   excerpt?: string;
+  /** ISO timestamp when post was sent to newsletter subscribers (optional) */
+  emailedAt?: string;
 }
 
 export interface Me3Product {
@@ -584,6 +586,15 @@ export function validateProfile(data: unknown): ValidationResult {
           errors.push({
             field: `posts[${index}].excerpt`,
             message: "Post excerpt must be a string",
+          });
+        }
+        if (
+          post.emailedAt !== undefined &&
+          typeof post.emailedAt !== "string"
+        ) {
+          errors.push({
+            field: `posts[${index}].emailedAt`,
+            message: "Post emailedAt must be a string",
           });
         }
       });
