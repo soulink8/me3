@@ -170,6 +170,8 @@ export interface Me3IntentBook {
   description?: string;
   /** Meeting duration in minutes */
   duration?: number;
+  /** Buffer time between meetings in minutes (default: 0) */
+  bufferTime?: number;
   /** Booking provider (e.g., "cal.com", "calendly") - for external providers */
   provider?: string;
   /** Direct booking URL - for external booking systems */
