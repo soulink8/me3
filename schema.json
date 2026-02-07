@@ -60,7 +60,10 @@
           "type": "object"
         }
       },
-      "required": ["timezone", "windows"],
+      "required": [
+        "timezone",
+        "windows"
+      ],
       "type": "object"
     },
     "Me3BookingPricing": {
@@ -73,7 +76,11 @@
         },
         "currency": {
           "description": "Currency code",
-          "enum": ["USD", "GBP", "EUR"],
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
           "type": "string"
         },
         "enabled": {
@@ -108,7 +115,11 @@
         },
         "style": {
           "description": "Button style",
-          "enum": ["primary", "secondary", "outline"],
+          "enum": [
+            "primary",
+            "secondary",
+            "outline"
+          ],
           "type": "string"
         },
         "text": {
@@ -120,7 +131,10 @@
           "type": "string"
         }
       },
-      "required": ["text", "url"],
+      "required": [
+        "text",
+        "url"
+      ],
       "type": "object"
     },
     "Me3Footer": {
@@ -149,7 +163,10 @@
           "type": "string"
         }
       },
-      "required": ["text", "url"],
+      "required": [
+        "text",
+        "url"
+      ],
       "type": "object"
     },
     "Me3IntentBook": {
@@ -159,6 +176,10 @@
         "availability": {
           "$ref": "#/definitions/Me3BookingAvailability",
           "description": "Availability windows - for native me3 booking"
+        },
+        "bufferTime": {
+          "description": "Buffer time between meetings in minutes (default: 0)",
+          "type": "number"
         },
         "description": {
           "description": "What the meeting is about",
@@ -189,7 +210,9 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
       "type": "object"
     },
     "Me3IntentShop": {
@@ -198,7 +221,11 @@
       "properties": {
         "currency": {
           "description": "Shop currency",
-          "enum": ["USD", "GBP", "EUR"],
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
           "type": "string"
         },
         "description": {
@@ -214,7 +241,10 @@
           "type": "string"
         }
       },
-      "required": ["enabled", "currency"],
+      "required": [
+        "enabled",
+        "currency"
+      ],
       "type": "object"
     },
     "Me3IntentSubscribe": {
@@ -231,7 +261,12 @@
         },
         "frequency": {
           "description": "How often subscribers will hear from you",
-          "enum": ["daily", "weekly", "monthly", "irregular"],
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly",
+            "irregular"
+          ],
           "type": "string"
         },
         "title": {
@@ -239,7 +274,9 @@
           "type": "string"
         }
       },
-      "required": ["enabled"],
+      "required": [
+        "enabled"
+      ],
       "type": "object"
     },
     "Me3Intents": {
@@ -321,7 +358,12 @@
           "type": "boolean"
         }
       },
-      "required": ["slug", "title", "file", "visible"],
+      "required": [
+        "slug",
+        "title",
+        "file",
+        "visible"
+      ],
       "type": "object"
     },
     "Me3Post": {
@@ -352,7 +394,11 @@
           "type": "string"
         }
       },
-      "required": ["slug", "title", "file"],
+      "required": [
+        "slug",
+        "title",
+        "file"
+      ],
       "type": "object"
     },
     "Me3Product": {
@@ -364,7 +410,11 @@
         },
         "currency": {
           "description": "Currency code",
-          "enum": ["USD", "GBP", "EUR"],
+          "enum": [
+            "USD",
+            "GBP",
+            "EUR"
+          ],
           "type": "string"
         },
         "excerpt": {
@@ -399,7 +449,13 @@
           "type": "string"
         }
       },
-      "required": ["slug", "title", "file", "price", "currency"],
+      "required": [
+        "slug",
+        "title",
+        "file",
+        "price",
+        "currency"
+      ],
       "type": "object"
     },
     "Me3Profile": {
@@ -477,6 +533,17 @@
           },
           "type": "array"
         },
+        "testimonialDisplay": {
+          "$ref": "#/definitions/Me3TestimonialDisplay",
+          "description": "Where testimonials should be displayed"
+        },
+        "testimonials": {
+          "description": "Testimonials / social proof",
+          "items": {
+            "$ref": "#/definitions/Me3Testimonial"
+          },
+          "type": "array"
+        },
         "verification": {
           "$ref": "#/definitions/Me3Verification",
           "description": "Human verification status (populated from account, not editable per-site)"
@@ -486,8 +553,48 @@
           "type": "string"
         }
       },
-      "required": ["version", "name"],
+      "required": [
+        "version",
+        "name"
+      ],
       "type": "object"
+    },
+    "Me3Testimonial": {
+      "additionalProperties": false,
+      "properties": {
+        "avatar": {
+          "description": "Avatar image URL",
+          "type": "string"
+        },
+        "handle": {
+          "description": "Social handle (optional)",
+          "type": "string"
+        },
+        "name": {
+          "description": "Person's display name",
+          "type": "string"
+        },
+        "profileUrl": {
+          "description": "Link to their profile/site (optional)",
+          "type": "string"
+        },
+        "quote": {
+          "description": "The testimonial quote text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "quote"
+      ],
+      "type": "object"
+    },
+    "Me3TestimonialDisplay": {
+      "enum": [
+        "homepage",
+        "standalone"
+      ],
+      "type": "string"
     },
     "Me3Verification": {
       "additionalProperties": false,
@@ -505,7 +612,9 @@
           "type": "string"
         }
       },
-      "required": ["verified"],
+      "required": [
+        "verified"
+      ],
       "type": "object"
     }
   }

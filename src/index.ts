@@ -56,6 +56,21 @@ export interface Me3Product {
   excerpt?: string;
 }
 
+export interface Me3Testimonial {
+  /** Person's display name */
+  name: string;
+  /** Social handle (optional) */
+  handle?: string;
+  /** Avatar image URL */
+  avatar?: string;
+  /** The testimonial quote text */
+  quote: string;
+  /** Link to their profile/site (optional) */
+  profileUrl?: string;
+}
+
+export type Me3TestimonialDisplay = "homepage" | "standalone";
+
 export interface Me3Links {
   website?: string;
   github?: string;
@@ -235,6 +250,10 @@ export interface Me3Profile {
   posts?: Me3Post[];
   /** Products (markdown) */
   products?: Me3Product[];
+  /** Testimonials / social proof */
+  testimonials?: Me3Testimonial[];
+  /** Where testimonials should be displayed */
+  testimonialDisplay?: Me3TestimonialDisplay;
   /**
    * Custom footer configuration.
    * - `undefined`: default footer behavior (renderer-defined)
@@ -283,6 +302,7 @@ const MAX_INTENT_TITLE_LENGTH = 100;
 const MAX_INTENT_DESCRIPTION_LENGTH = 300;
 const VALID_FREQUENCIES = ["daily", "weekly", "monthly", "irregular"];
 const VALID_CURRENCIES = ["USD", "GBP", "EUR"];
+const VALID_TESTIMONIAL_DISPLAYS = ["homepage", "standalone"];
 
 /**
  * Validate a me3 profile object
@@ -692,6 +712,82 @@ export function validateProfile(data: unknown): ValidationResult {
             message: "Product excerpt must be a string",
           });
         }
+      });
+    }
+  }
+
+  // Testimonials (optional)
+  if ((profile as any).testimonials !== undefined) {
+    const testimonials = (profile as any).testimonials;
+    if (!Array.isArray(testimonials)) {
+      errors.push({
+        field: "testimonials",
+        message: "Testimonials must be an array",
+      });
+    } else {
+      testimonials.forEach((testimonial: any, index: number) => {
+        if (!testimonial || typeof testimonial !== "object") {
+          errors.push({
+            field: `testimonials[${index}]`,
+            message: "Testimonial must be an object",
+          });
+          return;
+        }
+        if (!testimonial.name || typeof testimonial.name !== "string") {
+          errors.push({
+            field: `testimonials[${index}].name`,
+            message: "Testimonial name is required",
+          });
+        }
+        if (!testimonial.quote || typeof testimonial.quote !== "string") {
+          errors.push({
+            field: `testimonials[${index}].quote`,
+            message: "Testimonial quote is required",
+          });
+        }
+        if (
+          testimonial.handle !== undefined &&
+          typeof testimonial.handle !== "string"
+        ) {
+          errors.push({
+            field: `testimonials[${index}].handle`,
+            message: "Testimonial handle must be a string",
+          });
+        }
+        if (
+          testimonial.avatar !== undefined &&
+          typeof testimonial.avatar !== "string"
+        ) {
+          errors.push({
+            field: `testimonials[${index}].avatar`,
+            message: "Testimonial avatar must be a string",
+          });
+        }
+        if (
+          testimonial.profileUrl !== undefined &&
+          typeof testimonial.profileUrl !== "string"
+        ) {
+          errors.push({
+            field: `testimonials[${index}].profileUrl`,
+            message: "Testimonial profileUrl must be a string",
+          });
+        }
+      });
+    }
+  }
+
+  // Testimonial display (optional)
+  if ((profile as any).testimonialDisplay !== undefined) {
+    const display = (profile as any).testimonialDisplay;
+    if (typeof display !== "string") {
+      errors.push({
+        field: "testimonialDisplay",
+        message: "Testimonial display must be a string",
+      });
+    } else if (!VALID_TESTIMONIAL_DISPLAYS.includes(display)) {
+      errors.push({
+        field: "testimonialDisplay",
+        message: `Testimonial display must be one of: ${VALID_TESTIMONIAL_DISPLAYS.join(", ")}`,
       });
     }
   }
